@@ -1,0 +1,104 @@
+CPSC1280
+Assignment 02: CLI
+Tomas Gonzalez Ortega - 100266942
+
+	1.	[2] Use tr to replace all vowels (aeiou) with x [do not alter the original file].  What's the command and the sha1sum [begins: d1]?
+	nussferatu:~/workspace $ tr [aeiou] x < words.txt | sha1sum
+	d16441474ab316bbf1bd70e0b89778e98e28bdad  -
+
+	2.	[3] [see below for a test case] How many unique 3 character prefixes (the first 3 letters of a word) are there in this word list [include 1 and 2 character prefixes]? Use cut, uniq, and wc in a pipeline. Give the answer and the command to find it.
+
+		nussferatu:~/workspace $ cut -b 1-3 words.txt | uniq | wc
+
+		   5193    5193   20287
+
+	3.	[3] Use head and tail to output only the 90th - 100th line (inclusive; 11 lines) of words.txt. What is the pipeline and the sha1sum?
+
+		nussferatu:~/workspace $ head -100 words.txt | tail -11 | sha1sum
+
+		0846991f7bde3238d9716553fb35c9f3dfa02a08  -
+
+	4.	[5] What's the most common last letter, and how often does it occur? [Use the filter 'rev' to print each line backwards.] Give the answer and the pipeline.
+
+		nussferatu:~/workspace $ sort -n words.txt | rev |  uniq -c | cut -c 1 | wc
+
+		 354983       0  709966
+	
+	5.	[9] Suppose you want to run the command ./foo with the following combinations of inputs and outputs. Give the commands.
+	1.	input: file fin; output: overwrite fout; errors: append to ferr
+	2.	input: string f; output: console; errors: ignored
+	3.	input: none; output: append to fout; errors: also in fout
+
+	nussferatu:~/workspace $ ./foo < fin.txt > fout.txt 2>> ferr.txt
+	nussferatu:~/workspace $ ./foo < var=“f” > 2>> 
+	nussferatu:~/workspace $ ./foo < >> fout.txt 2>> fout.txt
+
+	6.	[3] [see below for an explanation] Run the command ./foo such that all of its regular output is printed before any of its errors.
+
+		Didn’t get it
+
+	7.	[2] You want to concatenate two files, f1 and f2, but also insert some text after f1 and before f2 from the terminal. Give the command to do this.
+
+		nussferatu:~/workspace $ (cat f1.txt ; echo ‘some text') >> f2.txt || sed 'foo' f2.txt
+
+	8.	[5] Give globs that will match filenames that:
+	1.	start with a number                               ls [0-9]*
+	2.	start with a non-number                         ls [![:digit:]]*
+	3.	contain a lower case letter                       ls [:lower:]*
+	4.	start with an 'X', and are 3 characters long  ls X??*
+	5.	end with a '.' followed by an 'a' or a ‘b’.     ls .?*
+
+	9.	[2] Suppose the program ./foo takes 2 arguments. In this scenario, the 1st argument should be the 3 letter day of the week (use the date command), and the second should be the user's username, as given by the command whoami. What's the command?
+
+		nussferatu:~/workspace $ date && whoami
+	10.	[2] "cmp" is a command that compares two files. Use process substitution to determine if the first 10 lines in the file "foo" are the same as the last 10 lines in the file “foo”.
+
+		nussferatu:~/workspace $ cmp <(head -n 10 foo) <(tail -n 10 foo)
+
+	11.	[4] Using process substitution, and the filters that you have used so far, determine how many words in words.txt appear in words.txt when spelled backwards (a palindrome or levidrome) [eg: tacocat, stop/pots; count: 3]. Give the number of words, and the command.
+
+		nussferatu:~/workspace $ diff -sq <(echo words.txt) <(echo words.txt |rev) 
+
+	12.	[2] Display the arithmetic value: the number of lines in f1 minus the number of lines in f2
+		
+		Tried this:
+		nussferatu:~/workspace $ echo “the number of lines in f1 minus the number of lines in f2 is $((wc f1.txt - wc f2.txt))” And this but so far apparently couldn’t make it work: nussferatu:~/workspace $ varf1=$(wc f1.txt)
+		nussferatu:~/workspace $ varf2=$(wc f2.txt)
+		nussferatu:~/workspace $ result=$((varf1 - varf2))
+		bash: 0 0 0 f1.txt: syntax error in expression (error token is "0 0 f1.txt")
+		nussferatu:~/workspace $ echo $result  Ultimately I think this works: nussferatu:~/workspace $ cat f1.txt f2.txt | wc f1.txt f2.txt
+
+	13.	[2] Store the following into a variable $x: the number of lines in all .c files in the current directory [the total number of lines across all .c files].
+
+		nussferatu:~/workspace $ echo \$x= $(wc *.c)
+
+	14.	[2] Double the contents of the variable $x (multiply it by 2).
+
+		nussferatu:~/workspace $ \$x= $(\$x * 2)
+
+	15.	[2] Save the value of the variable $x into the file “fout"
+
+		nussferatu:~/workspace $ echo “\$x” > “$fout"
+
+	16.	[2] Without any spaces, print the value of $x, then a literal x, then the value of $y, then a literal y.
+
+		nussferatu:~/workspace $ echo ‘$xx$yy’
+
+	17.	[1] Give a command that will create a file named: hi”my'friend*!
+	
+		nussferatu:~/workspace $ touch hi\”my\’friend\*\!
+
+	18.	[3] Give 3 [non-interactive] rm commands to delete a file named * without deleting any other files.
+		
+		nussferatu:~/workspace $ rm \*
+		nussferatu:~/workspace $ rm "*"
+		nussferatu:~/workspace $ rm '*'
+		
+	19.	[3] Suppose the variable $x contains "foo bar". How could you invoke rm using $x to:
+	1.	delete a file named "foo bar”                 rm \"foo\ bar\" 
+	2.	delete two files named "foo" and “bar”    rm \”foo\”  \”bar\”
+	3.	delete a file literally named $x               rm \$x
+
+
+
+

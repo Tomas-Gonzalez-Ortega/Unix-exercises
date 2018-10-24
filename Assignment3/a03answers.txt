@@ -1,0 +1,179 @@
+CPSC 1280
+a03: File System
+Download and un-archive. http://mylinux.langara.ca/~jhilliker/1280/a03.tar.bz2
+***** Part 1 - find [/15]
+w/r/t the directory "d" in the tar file.
+[2] Use a single find command to find the symlinks. Display their meta-data as from ls -l. Give the command and the output.
+find -L d | ls -l
+total 100
+-rw-r--r-- 1 ubuntu ubuntu 25714 Jan 16 02:16 a03.tar.bz2
+-rw-r--r-- 1 ubuntu ubuntu   171 Jan 15 01:45 comm.a.2
+-rw-r--r-- 1 ubuntu ubuntu    61 Jan 15 01:43 comm.a.3
+-rw-r--r-- 1 ubuntu ubuntu   569 Jan 15 01:53 comm.b.1
+-rw-r--r-- 1 ubuntu ubuntu   565 Jan 15 01:53 comm.b.2
+drwxr-xr-x 8 ubuntu ubuntu  4096 Jan 15 01:16 d/
+-rw-r--r-- 1 ubuntu ubuntu    52 Jan 15 03:04 diff.a.2
+-rw-r--r-- 1 ubuntu ubuntu    65 Jan 15 03:05 diff.a.diff
+-rw-r--r-- 1 ubuntu ubuntu    54 Jan 15 03:07 diff.b.diff
+-rw-r--r-- 1 ubuntu ubuntu 37605 Jan 16 01:46 pokemon.csv
+
+2. [3] Use a single find command to find the files that are larger than 1k. Display their meta-data as from ls -l. Give the command and the output.
+find d -size +1000 | ls -l
+total 100
+-rw-r--r-- 1 ubuntu ubuntu 25714 Jan 16 02:16 a03.tar.bz2
+-rw-r--r-- 1 ubuntu ubuntu   171 Jan 15 01:45 comm.a.2
+-rw-r--r-- 1 ubuntu ubuntu    61 Jan 15 01:43 comm.a.3
+-rw-r--r-- 1 ubuntu ubuntu   569 Jan 15 01:53 comm.b.1
+-rw-r--r-- 1 ubuntu ubuntu   565 Jan 15 01:53 comm.b.2
+drwxr-xr-x 8 ubuntu ubuntu  4096 Jan 15 01:16 d/
+-rw-r--r-- 1 ubuntu ubuntu    52 Jan 15 03:04 diff.a.2
+-rw-r--r-- 1 ubuntu ubuntu    65 Jan 15 03:05 diff.a.diff
+-rw-r--r-- 1 ubuntu ubuntu    54 Jan 15 03:07 diff.b.diff
+-rw-r--r-- 1 ubuntu ubuntu 37605 Jan 16 01:46 pokemon.csv
+3. [3] Using a single find command, find the files that were modified more than a month ago [30 days], but less than a year ago [365 days]. Display their meta-data as from ls -l. Give the command and the output.
+I GOT 2 OPTIONS HERE MAYBE BOTH ARE WRONG 😝 
+find d -mtime +30 -a -mtime -365 -ls
+1303    0 -rw-r--r--   1 ubuntu   ubuntu          0 Apr  1  2017 d/d4/e1/f64
+  1115    0 -rw-r--r--   1 ubuntu   ubuntu          0 Oct 12 12:00 d/d4/e6/f42
+  1139    0 -rw-r--r--   1 ubuntu   ubuntu          0 Oct 12 12:00 d/d4/e6/f44
+  1245    0 -rw-r--r--   1 ubuntu   ubuntu          0 Apr  1  2017 d/d4/e5/f12
+
+find d -mtime +30 -a -mtime -365 | ls -l
+total 100
+-rw-r--r-- 1 ubuntu ubuntu 25714 Jan 16 02:16 a03.tar.bz2
+-rw-r--r-- 1 ubuntu ubuntu   171 Jan 15 01:45 comm.a.2
+-rw-r--r-- 1 ubuntu ubuntu    61 Jan 15 01:43 comm.a.3
+-rw-r--r-- 1 ubuntu ubuntu   569 Jan 15 01:53 comm.b.1
+-rw-r--r-- 1 ubuntu ubuntu   565 Jan 15 01:53 comm.b.2
+drwxr-xr-x 8 ubuntu ubuntu  4096 Jan 15 01:16 d/
+-rw-r--r-- 1 ubuntu ubuntu    52 Jan 15 03:04 diff.a.2
+-rw-r--r-- 1 ubuntu ubuntu    65 Jan 15 03:05 diff.a.diff
+-rw-r--r-- 1 ubuntu ubuntu    54 Jan 15 03:07 diff.b.diff
+-rw-r--r-- 1 ubuntu ubuntu 37605 Jan 16 01:46 pokemon.csv
+4. [7] Use a pair of find commands to find the hardlinks and display their meta-data as from ls -li. Ensure that the output lists the related hardlinks above/below each other. Give the command and the output.
+find . -samefile d | ls -li
+total 100
+ 313 -rw-r--r-- 1 ubuntu ubuntu 25714 Jan 16 02:16 a03.tar.bz2
+6512 -rw-r--r-- 1 ubuntu ubuntu   171 Jan 15 01:45 comm.a.2
+6513 -rw-r--r-- 1 ubuntu ubuntu    61 Jan 15 01:43 comm.a.3
+6514 -rw-r--r-- 1 ubuntu ubuntu   569 Jan 15 01:53 comm.b.1
+6515 -rw-r--r-- 1 ubuntu ubuntu   565 Jan 15 01:53 comm.b.2
+ 321 drwxr-xr-x 8 ubuntu ubuntu  4096 Jan 15 01:16 d/
+6516 -rw-r--r-- 1 ubuntu ubuntu    52 Jan 15 03:04 diff.a.2
+6517 -rw-r--r-- 1 ubuntu ubuntu    65 Jan 15 03:05 diff.a.diff
+6518 -rw-r--r-- 1 ubuntu ubuntu    54 Jan 15 03:07 diff.b.diff
+6519 -rw-r--r-- 1 ubuntu ubuntu 37605 Jan 16 01:46 pokemon.csv
+
+***** Part 2 - file commands [/25]
+5. [2] w/r/t pokemon.csv: Sort them by their HP (5th column), break ties by their pokedex (1st column). Both should be in ascending order (highest last). Give the command and the sorted output's sha1sum.
+sort -t: -k 5 -k 1 pokemon.csv | sha1sum
+5b2c857370950437d48f38d80bc0fc5ac973c02a  -
+6. [2] w/r/t pokemon.csv: Give a command that will display each type of pokemon exactly once. Pokemon type is listed in fields 3 & 4. For the purpose of this question, those types should be treated independently. eg: "469,Yanmega,Bug,Flying,..." -> will count as "bug" and "flying" separately. *See below for sample I/O
+sort -t: -k 3,3 -k 4,4 pokemon.csv | uniq -c
+I don’t think this works for me
+Download and un-archive. http://mylinux.langara.ca/~jhilliker/1280/books.tar.bz2
+7. [5] What are the 5 most commonly occurring words in the corpus of books? Ignore case. For the purpose of this question, a "word" is considered to be a contiguous substring of letters. [use: cat, tr, sort, uniq] Give the command and the 5 words. eg: "On the 27th of June, June ate the 4th pie on the pie-shelf." -> the, th, pie, on, june
+cat books/*.txt | tr -d '[:punct:]' | tr -d '[:digit:]' | tr -s ' ' '\n*' | sort -n | uniq -c | sort -n | tail -5
+24126 a
+28095 to 
+29415 of
+42162 and
+60206 the
+8. [2] How many words occur only once in the corpus [using the same rules as the previous question]. Give the command and the count. eg: "On the 27th of June, June ate the 14th pie on the pie-shelf." -> 3 [ate, of, shelf]
+cat books/*.txt | tr -d '[:punct:]' | tr -d '[:digit:]' | tr -s ' ' '\n*' | sort -n | uniq -u | wc -l
+21165
+9. [3] comm.a.3 is the result of running "comm comm.a.1 comm.a.2 > comm.a.3". Use comm.a.3 to reconstruct comm.a.1. You may do the reconstruction manually. Include comm.a.1 here:
+comm -3 comm.a.3 comm.a.2 > comm.a.1
+Iiɵ$ji4zAAYB$dWxSY@o 
+:bC|ojB!       fmAHB]C\
+Despite I tried this I believe I saw comm.a.3 empty at the beginning hence comm.a.2 had all the content, hence comm.a.1 was supposedly empty? To be honest I’m kinda confused in this part.
+10. [3] comm.b.1 & comm.b.2 are a list of numbers. Give a command that uses comm and process substitution to display only the numbers in common. Include the command and its output.
+comm -12 <( sort comm.b.1 ) <( sort comm.b.2 )
+14486
+31376
+5169
+11. [3] diff.a.diff is the result of running "diff diff.a.1 diff.a.2 > diff.a.diff" Use the diff files to reconstruct diff.a.1. You may do the reconstruction manually. Include diff.a.1 here:
+What I understood here was:
+Line 1 add to match line 2 through 3 in the second file
+cook originally from second file
+potato originally from second file
+Line 3 changed to match line 5
+travel originally from file 1
+ - - - (merely separate the lines of file 1 and file 2)
+trousers originally from second file
+Line 5 delete to match line 6 in the second file
+consumer originally from file 1
+
+
+All this makes me think file diff.a.1 is:
+cook 
+potato 
+trousers
+travel 
+bulldozers 
+consumer 
+12. [3] If the output from running "diff diff.b.1 diff.b.2 > diff.b.diff" is contained in diff.b.diff, then what would be the output from running "diff diff.b.2 diff.b.1 > diff.b.diff.alt"? Place the output here:
+1a2
+< bread
+4c5
+> tablet
+- -  (this is 3 dashes but this damn thing looks like a line, its - - - )
+< table
+6d6
+< calculator
+
+13. [2] Give command to archive all .txt files in the current directory. It does not need to search sub directories. The archive should be named txtfiles.tar.bz2 and it should use the appropriate compression technique.
+tar -cvjf txtfiles.tar.bz2 books/*.txt 
+
+***** Part 3 - Links [/13]
+Note: the questions in this part are independent.
+14. [12] Suppose there is an executable program file named "/usr/bin/foo": -rwxr-xr-x 1 root root 14648 Mar 21 2017 foo*
+
+Suppose you created a link to this file as follows: "cd ~/bin; ln /usr/bin/foo", and then the root user overwrites /usr/bin/foo with a new version with "cp newFoo foo". If you run your link to foo, will you run the new version or the old version? Why or why not?
+The new version because the content of the inode has changed
+
+b) Suppose you created a link to the file as follows: "cd ~/bin; ln -s /usr/bin/foo", and then the root user overwrites /usr/bin/foo with a new version with "cp newFoo foo". If you run your link to foo, will you run the new version or the old version? Why or why not?
+The new version because the link now points to the newFoo
+
+c) Suppose you created a link to this file as follows: "cd ~/bin; ln /usr/bin/foo", and then the root user overwrites /usr/bin/foo with a new version with "mv newFoo foo". If you run your link to foo, will you run the new version or the old version? Why or why not?
+The new version because the content of the inode has been replaced by newFoo
+
+d) Suppose you created a link to this file as follows: "cd ~/bin; ln -s /usr/bin/foo", and then the root user overwrites /usr/bin/foo with a new version with "mv newFoo foo". If you run your link to foo, will you run the new version or the old version? Why or why not?
+This will fail since the link no longer points to anything
+
+e) Suppose you created a link to this file as follows: "cd ~/bin; ln /usr/bin/foo", and then the root user changed the permissions on /usr/bin/foo with "chmod a-xrw /usr/bin/foo". Are you still able to run foo through your link? Why or why not?
+Not anymore, since the permissions of the inode were changed
+
+f) Suppose you created a link to this file as follows: "cd ~/bin; ln -s /usr/bin/foo", and then the root user changed the permissions on /usr/bin/foo with "chmod a-xrw". Are you still able to run foo through your link? Why or why not?
+Not again because of the change on the permissions (of the inode)
+
+15. [1] If you create a directory called "dir", and you create 100 subdirectories under "dir", and then 100 subdirectories under each of those subdirectories, what will be the link count on dir? Why?
+It will be 10002, because dir itself has two link counts, its parent and itself, then plus the 100 * 100 children below
+
+***** Part 4 - Permissions [/27]
+16. [1] Using the original file from the previous question, suppose we're not dealing with links anymore, and the superuser changes the permissions on /usr/bin/foo with "chmod a-xw /usr/bin/foo". Is there a way for you to be able to run the program foo again? [Rules: no invoking anything super-user related, having anyone change the permissions on /usr/bin/foo, or finding another copy of foo.] How, or why not?  I believe we could perform chmod –R a+r allRead to grant permission to all directories 
+17. [4] Give chmod commands (both symbolic and octal) to give the following permissions to a file named "foo".
+Owner: read, write; Group: read; Other: write
+chmod ug+r foo | chmod o+w foo
+chmod 442 foo
+
+b) Owner: read, write, execute; Group: read, execute; Other: execute
+chmod u+rwx foo | chmod g+rx foo | chmod o+x foo
+chmod 751 foo
+
+18. [16] Suppose that you want to access a file that is located in a far away directory. I wont give you the names, but I will represent them as the permissions that apply to you. For each of the following paths, answer:
+i) Can you read the file? Why or why not? ii) Can you create files in this directory? Why or why not? iii) Can you list the files in this directory? Why or why not? iv) Can you delete the file? Why or why not?
+a) File: r-- Dir: /--x/--x/r--/rwx/
+b) File: r-- Dir: /--x/--x/--x/-wx/
+c) File rw- Dir: /--x/--x/--x/r-x/
+d) File rwx Dir: /--x/--x/--x/rw-/
+19. [2] Suppose you are the user "you", that you are a member of the group "yours". When encountering the following files, can you determine the file's contents [no super user stuff or asking anyone]? How, or why not?
+-rw----r-- 1 notyou yours 58 Jan 15 12:30 foo
+Nope none of the group permissions are allowed
+b) -rw------- 1 notyou yours 0 Jan 15 12:30 bar
+Nope none of the group permissions are allowed
+20. [4] Can you set the default permissions for newly created files and directories to be the following? If so, give the command; if not, explain why.
+a) Files: rw-r--r-- Dirs: rwxr-xr-x
+b) Files: rwxr-xr-x Dirs: rwxr-xr-x
+c) Files: rw-rw-r-- Dirs: rwxr-xr-x
+d) Files: rw-r--r-- Dirs: rw-r--r--

@@ -1,0 +1,94 @@
+CPSC1280 UNIX Tools and Scripting
+Tomas Gonzalez-Ortega
+100266942
+January 10, 2018
+					a01: OS & Unix Intro
+	1.	[5] An abstract model of a computer has 5 components. What are they, and what do they do?
+
+		Input (input data device/mechanism), CPU (The central processing unit what it manage the control the machine and a Logical unit to perform operations), Main Memory (Memory to store instructions and data), Secondary Memory (External Mass storage), Output (A device/mechanism to print or display results or any feedback we want from the operation)
+
+	2.	[5] Briefly describe the 5 types of CPU operations.
+
+		Fetch (retrieving an instruction from program memory), Decode (converting the instruction into signals that control other parts of the CPU, machine language), Execute (perform a single or multiple sequence of actions), Memory Access (writing information in memory or reading information from memory), Writeback (storage method involving writing data into the cache memory whenever a change happens and written into the main memory only every once in a while or under certain constraints).
+
+	3.	[2] What are the 2 Roles of the OS?
+
+		Manages the hardware and software resources into the system and also provides a platform for applications to deal with the hardware (abstraction).
+
+	4.	[4] What are the OS's tasks?
+
+		Process management, Memory Management, File System Management, Device Management.
+
+	5.	[1] What is a process?
+
+		A process is an instance of a program.
+
+	6.	[1] What is scheduling?
+
+		Determine which process is given control of the CPU.
+
+	7.	[1] What allows the OS to execute commands with more privileges than applications?
+
+		Since is in management of processes, memory, file systems and devices its provided with the Kernel or Supervisor mode (Multimode Execution, ring 0)
+
+	8.	[1] In what mode do applications/shell/libraries run?
+
+		They run over User mode (ring 3). Some of the user applications with special permissions are granted the ring 2 called Hypervisor.
+
+
+	9.	[1] How do user applications or libraries access the services offered by the OS?
+
+		They perform a System Call (a privileged instruction) who generates a Trap, causes a Context Switch from User Mode to Kernel Mode and Executes the OS’s trap handler, resulting on a desired action.
+
+
+	10.	[1] How does an external device signal the OS when it has data to be processed?
+
+	Asynchronously through an Interrupt.
+
+	11.	[1] What device generates a Page Fault?
+
+	Computer hardware, in particular Virtual Memory.
+
+	12.	[1] What does a Page Fault indicate?
+
+		Usually suggests that an memory increase is necessary to run a program through a minor, major or invalid fault.
+
+	13.	[1] Why was/is Unix so portable?
+
+		Written in a high-level language, providing a multiple user with multiple processes platform at the same time, sharing resources in an efficient and fair manner.
+
+	14.	[2] What two methods (other than files on disk) can applications on the same machine use to communicate with one another?
+
+		Pipe and Sockets.
+
+	15.	[2] What are the differences between those two methods?
+
+		Pipe offers One-way data channel on the same machine while Two-way data channel allows processes on the same or different machine to talk.
+
+	16.	[5] Name the parts of a UNIX system?
+
+		Kernel, System Calls, Shell, Library routine and Applications.
+
+	17.	[3] Describe the Unix design philosophy.
+
+		A program should do 1 thing fairly well. Whenever it comes to complex tasks it should be performed by using single utilities altogether.
+
+	18.	[7] List the 4+3 types of files in UNIX, and give their symbol that represents them as from ls -l
+
+		Regular / Ordinary / Normal / Data files (-)
+		Directories (d)
+		Devices (c, d)
+		Links (l)
+		Named Pipe ( p )
+		Socket (s)
+		Door (D)
+
+	19.	[3] Give three places to look for more info about shell commands.
+
+		https://afni.nimh.nih.gov/pub/dist/edu/data/CD.expanded/AFNI_data6/unix_tutorial/misc/unix_commands.html
+
+		https://www.tutorialspoint.com/unix_commands/index.htm
+
+		https://swcarpentry.github.io/shell-novice/
+
+

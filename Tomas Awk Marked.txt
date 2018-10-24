@@ -1,0 +1,30 @@
+CPSC1280 Tomas Gonzalez-Ortega
+a05: awk
+
+1. -2
+That's the last line, where's the rest of it?
+
+7. -1 typo here, you want < min , not <minWage
+
+9. -1 This is the lexicographically first name. You want "$2 > surname" rather than vice versa.
+
+12. -4
+
+13. -3
+
+No you want to display often 50 cents, 51 cents, ... 60 cents each occurred in sales. 
+	{
+	for( i = 1; i <= NF; i++ ) {
+	split($i, a, ".")
+	cents[a[2]] += 1
+	}}
+	END {
+	for(i = 50; i <= 60; i++) {
+	printf "%02i %i\n", i, cents[i]
+	}
+	}
+
+17. -2 Your regex is incorrect. Compare: $2 ~ "([[:upper:]].*){3}" { $6 -= 10 }
+* isn't a wildcard by itself like in filename globs, for something that works like that you want .*
+
+Total: 55/68

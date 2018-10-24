@@ -1,0 +1,186 @@
+CPSC1280 a06: sh & ps
+Tomas Gonzalez-Ortega 100266942
+
+[1] q1) Why does the command "cd" not run in a new process?
+It doesn’t because it doesn’t clone itself nor create a children of its own. 
+
+
+[2] q2) Why does the command " ( exit ) " not log you out of your shell, whereas " exit " does?
+Because you exit the lately created shell and not the original. 
+
+
+[8] q3) Given that the executable "foo" creates files in the directory "bar", for each of the following scenarios of permissions, state the owner:group of the created file, or if it fails, say why.
+
+
+       user | perms, owner :foo | perms, owner :bar
+x) alice:gA | -rwx--x--x bob:gB | drwxrwxrwx cloe:gC | answ: alice:gA
+a) alice:gA | -rwx--x--x bob:gB | drwxr-xr-x bob:gB
+access denied because no writing permission in the others directory
+
+b) alice:gA | -rwx--s--x bob:gB | drwx-wx--- bob:gB
+Alice:gB (Just because the s provided me with the group permissions of bob who’s in group B
+
+c) alice:gA | -rwx--s--x bob:gB | drwx------ bob:gB
+Access denied (despite joined group B her group has no permissions to access/put stuff in bar)
+
+d) alice:gA | -rws--x--x bob:gB | drwx------ bob:gB
+bob:gA Alice got changed into Bob
+
+e) alice:gA | -rwx--S--x bob:gB | drwx-wx--- bob:gB
+alice:gB (alice got changed into B group because of the S but the S means no exe permissions in the group but she till went in because alice was part of others who has x permissions)
+
+f) alice:gB | -rwx--S--x bob:gB | drwx-wx--- bob:gB
+alice:gB
+
+g) alice:gA | -rws--s--x bob:gB | drwx-ws-wx cloe:gC
+bob:gC (you become bob:gB because of the s in owner and group for the file and then your group changes to C because of the s in the directory)
+
+h) alice:gC | -rws--s--x bob:gB | drwx-ws--- cloe:gC
+bob:gC (pretty much the same reasons than the previous)
+
+
+[2] q4) Give the full command to add the user "alice" to the machine. She should have a home directory, and her shell should be “/bin/bash".
+useradd -u 210 -g dba -c "this is Alice account" -d /home/alice -s /bin/bash -m alice
+
+
+[2] q5) Give the full command to remove the user "alice" from the machine. Her home directory should also be removed.
+userdel -r alice
+
+
+
+[2] q6) Give the command to install the package "p7zip-full" on the c9 machine ( you will need this for q11)
+sudo apt-get install p7zip-full
+
+
+[4] q7) Formulate a Crontab entry that will: * run the program nookie.sh * at 9am and 10pm * every other day(odd or evens but all the same) (twice in a row on month change over is okay) * For the months of April-August (inclusive)
+* 9,10 */2 apr-aug *  ./nookie.sh
+
+
+[4] q8) Suppose the filesystem began a transaction, then the power failed. Explain why or why not Action A is reflected on disk after fully rebooting when the transaction log contains:
+
+BEGIN; action A; action B; COMMIT; COMMITTED; A is reflected on the disk, since the crash happened after have being committed the whole process is already done. This won’t be re written in case of journaled.
+
+BEGIN; action A; action B; COMMIT;  A is not reflected on the disk. Potential inconsistency on the disk in regards Action A and B. Replays its operation to ensure its integrity on case its journaled.
+
+BEGIN; action A; action B; A is not reflected on the disk. The OS will notice it and will restart the check its journal to see the pending transactions (A and B)
+
+BEGIN; action A; A is not reflected on the disk. The OS will notice and it will restart and check its journal to see the pending transactions
+
+
+[15] q9) Write a script [rmContainsAny.sh] that:
+	•	WARNING: be careful that you do not accidentally delete your work! Avoid this by making hardlinks to your files from another directory.
+	•	If no arguments are given, display program usage and exit with status 3
+	•	Deletes all files in the current directory that contain ANY of the patterns passed as command line arguments.
+	•	Filenames may contain spaces, and patterns may contain spaces.
+	•	Display a message as each file is deleted.
+	•	If no files match, exit with status 1 IF NO FILE NAME CONTAINS THE PATTERN
+	•	If a file cannot be deleted, exit with status 2
+	•	Otherwise exit with status 0
+
+#!/bin/bash
+#if no arguments are passed do this
+[ $# -eq 0 ] && {
+cat << USAGE
+Please enter the pattern for the file you desire to delete
+USAGE
+exit 3
+}
+
+status=1;
+
+for arguments in $* ; do
+    for file in $(ls | grep $arguments | grep -v rmContainsAny.sh) ; do
+        if [ -f $file ] ;then 
+            #doesnt work if filename has space in them
+            rm -f $(ls | grep $arguments | grep -v rmContainsAny.sh);
+            if [ ! $? -eq 0 ] ; then
+                echo "file deletion failed"
+                exit 2
+            fi
+            status=0;
+            echo "the files with the pattern $arguments has been successfully deleted"
+        fi
+    done
+    
+    if [ $status -eq 1 ] ; then 
+        echo "no file found"
+        exit 1
+    fi
+    
+    exit 0
+done
+
+
+[15] q10) Write a script that [rmContainsAll.sh]:
+	•	Is the same as above, except that it:
+	•	Deletes all files in the current directory that contain ALL of the patterns passed as command line arguments.
+
+#!/bin/bash
+#if no arguments are passed do this
+[ $# -eq 0 ] && {
+cat << USAGE
+Please enter the pattern for the file you desire to delete
+USAGE
+exit 3
+}
+
+list=$(ls | grep -v rmContains)
+list=$(echo $list | tr " " "\n")
+
+for pattern in $* ; do
+    list=$(echo $list | tr " " "\n" | grep $pattern );
+done
+
+status=1;
+
+for file in $list ; do
+    if [ -f $file ] ; then
+        status=0;
+        rm -f $file;
+        if [ ! $? -eq 0 ] ; then
+            echo "file deletion failed"
+            exit 2
+        fi
+    fi
+done
+
+if [ $status -eq 1 ] ; then 
+    echo "no file found"
+    exit 1
+fi
+
+echo "the pattern has been successfully deleted"
+exit 0
+
+
+[21] q11) Write a shell script (compress.sh) that:
+	•	Prints a message describing program usage and exit 3 if no argument is given
+	•	Takes a list of arguments representing files
+	•	Tries to compress each file using 4 different compression utilities: gzip, bzip2, zip, 7z
+	•	Use the following file extensions:
+	◦	.gz : gzip
+	◦	.bz2 : bzip2
+	◦	.zip : zip
+	◦	.7z : 7z
+	•	Keeps whatever version is smallest, and deletes the other (including the original)
+	•	If the original is smallest, keeps it.
+	•	The kept file should be in the same directory as the original was
+	•	Prints a message saying which file it's keeping
+	•	Does everything in parallel. All of the input files are processed simultaneously. All 4 compressions are done for each file simultaneously.
+	•	Files and paths may contain spaces
+	•	You may assume that there are no naming collisions 
+	•	HINT: this as not as complicated as it seems. Do some actions, compare results, choose best result. Repeated for each input.
+	•	HINT: make it work in serial first
+	•	HINT: use the compression programs as filters with file redirection. eg: 7z < fin > fout
+	•	HINT: you way want to use basename and dirname, but it's easier without them
+	•	HINT: you may want to use stat. Dont. Just read the man page for ls.
+
+[16] q12) Write a script [killBusy.sh] that:
+	•	prints a message describing program usage and exit 3 if no argument is given
+	•	takes a single numeric command line argument representing a number of seconds
+	•	kills all processes owned by the user who runs the script (in any session) that have used that many seconds of CPU time (or more)
+	•	prints the pid & name of the process as it is being killed
+	•	exits 1 if no such processes exist
+	•	exits 0 otherwise
+	•	You may assume that no process has taken more than 24 hours of cpu time.
+	•	Hint: this one is fairly complex. My solution used: ps, variables, command substitution, a pipeline, sed, awk, escaping, while, read, and kill 

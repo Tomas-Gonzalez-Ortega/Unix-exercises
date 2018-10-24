@@ -1,0 +1,51 @@
+Q1
+
+    What's the program's output?
+
+	Segmentation fault
+
+    What's it's exit status?
+
+	nussferatu:~/workspace/a08/q1 $ ./a08q1 ; echo $?
+	Segmentation fault
+	139
+	
+    In which c source file did the fault occur?
+
+	(gdb) where
+	#0  0x0000000000400518 in fun (x=27) at q1_charlie.c:3
+	#1  0x00000000004004fb in main () at q1_amanda.c:4
+
+    In which function?
+	
+	fun
+
+    On which line?
+
+	3
+
+    Give the names and values of all variables in the function that caused the fault.
+
+	x=27	
+
+    Give the assembly instruction (name and arguments) that caused the fault.
+
+	{void (int)} 0x400502 <fun>
+
+    Give the name of the function that called the function that caused the fault.
+
+	Main
+
+    Give the name of the source file that contained that call.
+
+	Charlie
+
+    Give the line number that that call was made on.
+
+	3
+
+    Give the names and values of the variables in that function.
+
+	(gdb) info args
+	x = 27
+	(gdb) 

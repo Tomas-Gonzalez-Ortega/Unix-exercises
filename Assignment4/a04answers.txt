@@ -1,0 +1,157 @@
+CPSC1280                         TOMAS GONZALEZ ORTEGA
+a04
+
+[-5] Submit your answers in a plain text file named "a04answers.txt"
+Task
+For all of the following questions, give both the command and the sha1sum of the output. All questions should be answered without the use of files, variables, or semicolons. All questions are CaSe SeNsItIvE. Be mindful of lines/words/substrings.
+[20; 2 each]
+1) Use a pipeline with two BRE greps to display lines that contain both an 'a' and a 'b' [begins: b].cat * | grep a | grep b | sha1sum                                                                          
+ba88c41de57728a56cb838464720b58cf780e697  -
+
+2) Use a single pattern ERE grep to display lines that contain both an 'c' and a 'd' [begins: 7].
+cat * | egrep '(c.*d|d.*c)' | sha1sum                                                                      
+749f81307fc1e2292a7d3b945b662c767ec5df48  -
+
+3) Display lines that start with the word "bad" [begins: b].
+cat * | egrep '^bad\b' | sha1sum                                                                           
+bdad6efac8e58ebbfa02e503c5509d6d9f45ab32  -
+
+4) Display lines that contain the word "cat" [begins: 6].
+cat * | egrep '\bcat\b' | sha1sum                                                                          
+6772f107a48e66618743d5fbaa8cd51a0eab12e6  -
+
+5) Display the lines that contain the word "do" twice or more [begins: 4].
+$ cat * | egrep '\bdo\b.*(\bdo\b)+' | sha1sum                                                                
+4090012f55e22400c8871e51d22ca612008851fa  -
+
+6) Display lines that start with an "a", but not lines that start with "and" [begins: d].
+cat * | grep '^a' | grep -v '^and' | sha1sum                                                               
+d234e398ac6a677d3a2e014216d3badcff678fae  -
+
+7) Count how many lines contain the word 'bin'. Do not use wc. Use only cat and grep [begins: a].
+cat * | egrep -c '\bbin\b' | sha1sum
+a3db5c13ff90a36963278c6a39e4ee3c22e2a436  -
+
+8) Diplay the names of the files that contain the word "dad" [begins: 0].
+Adventures of Huckleberry Finn, Complete.txt
+Moby Dick; or The Whale.txt
+The Adventures of Tom Sawyer, Complete.txt 
+grep -l '\bdad\b' * | sha1sum
+0b72360fe8b46a2d3bbd745ed1241e28b3eba278  -
+
+9) Display the names of files that do not contain the word "dad" [begins: 4]
+grep -L '\bdad\b' * | sha1sum
+480ed6bb97c4b3b6fb516760d76035a381116b0b  -
+
+10) Display the line above and below every line that contains the substring "secret", but not the lines containing "secret" themselves. (Leave -- spacers in) [begins: 5]
+cat * | grep -A 1 -B 1 'secret' | grep -v 'secret' | sha1sum
+5d942736935b9733e3bed53e9034f188feeec2c1  -
+
+[20; 4 each]
+11) Display the lines containing a word occurring 7 times on that line [begins: e].
+Tried this but is clearly NOT WORKING: cat * | sed -r '/(\w)\{7\}$/ p' | sha1sum
+5b74ac5133412a2bfd89f104c2f25519917c20e5  -
+12) Count all the letters in the corpus of books. Display them with their counts in ascending order (highest last). Remove leading white space from the lines. Do not use sed, awk, or perl. Use only cat, grep, sort, uniq. [sha1 begins: 27]
+ cat * | grep -o "[[:alpha:]]" | sort | uniq -c | sha1sum                                       
+27609755842cbe810c080585aec522f866a1bada  -
+13) Use cat, (e)grep, and wc to display the longest word in the corpus. [sha1 begins: f]
+Tried: grep -E ".{$(wc -L < Meditations.txt)}" Meditations.txt
+14) Display the names of the files that contain the word "salt", but do not contain the word "pepper". You will have problems trying to use command substitution. Instead, use grep with the -Z option combined with using xargs with the -0 option. [begins: a]
+Tried this: cat * | egrep -Z -e 'salt' -e '[^p]epper' | xargs -0 | sha1sum                                             
+342ed99fb087072b4abfb11237a0a54bb644f705  -
+
+15) Display the lines that contain the 2nd most frequently occurring word in the entire corpus of books. Do not use awk, sed, perl, or other language. [begins: c]
+
+[20; 2 each]
+16) Replace every line that contains the substring "secret" with "REDACTED" [begins: 4]
+cat * | sed 's/.*secret.*/REDACTED/g' | sha1sum                                                            
+4a107b77a83d71c07d08c8a05987d88aa82ea9ea  -
+
+17) Put a line consisting of "TRIGGER WARNING" before any line that contains the substring "blood" [begins: 6]
+cat * | sed '/blood/i/"TRIGGER WARNING"' | sha1sum
+41345940bd216edc239b02f268e2b8af67d32da0  -
+
+18) Put a line consisting of "****" after every line that contains the substring "stars" [begins: 1]
+cat * | sed '/stars/a/"****"' | sha1sum                                                                    
+18c91fc179ec00222491095911ad334e57682a69  -
+
+19) Remove all words that start with a capital letter. [begins: a]
+$ cat * | sed 's/\b[A-Z]\w*\b//g' | sha1sum                                                                  
+a3755941a8bbecfc563f208a9d9bc552e554b3dd  -
+
+20) Reverse all 4 letter words. [begins: d]
+cat * | sed '/\b\w\w\w\w\b/s/\(\w\)\(\w\)\(\w\)\(\w\)/\4\3\2\1/g' | sha1sum
+d82802cf631ae53e29e0e5d1abb57a9915b9bdff  -
+
+21) Remove all blank lines. Blank lines are either empty, or consist of only whitespace. [begins: f] cat * | sed '/^[[:blank:]]*$/d' | sha1sum                                                   
+f909175b295bea08b9b15991282ead84b4cd7ce9  -
+
+22) Remove all leading and trailing whitespace. [begins: 8]
+cat * | sed -e 's/^[[:blank:]]*//g' -e 's/[[:blank:]]*$//g' | sha1sum                                      
+82c56eee1c56605860fdf7d0d72bdd407c23594c  -
+
+23) Replace all (horizontal) whitespace with a single space character. [begins: b]
+cat * | sed 's/[[:space:]]\+/ /g' | sha1sum                                                               
+b5fc530a239eba6cac7a81ea237c204241883dcb  -
+
+24) On every line between line #5000 and #100,000, replace the word "moist" with "damp." Line numbers are over the input from "cat *" [begins: 1] 
+cat * | sed '5000,100000{s/\bmoist\b/damp/g}' | sha1sum
+1b9ac54100b5c082b2495858cec0288c3aea7abf  -
+
+25) Replace every occurrence of the substring 'bronze' with 'silver', and every 'silver' with 'gold'. eg: "1 bronze, 2 silver" -> "1 silver, 2 gold" [begins: b]
+cat * | sed -e 's/silver/gold/g' -e 's/bronze/silver/g' | sha1sum
+b844ebcca219c1cf3e2429902b88363bcc2938d8  -
+
+[20; 4 each]
+26) Remove all lines that start with the substring 'I' (capital 'i'), but not ones that start with the word 'It' [begins: 2243169fe9b]
+cat * | sed -e '/^It\b/p' -e '/^I/d'  | sha1sum                                                            
+2243169fe9b36697fa21f5e0cddf0a31702fea17  -
+
+27) Double every word that contains "two" as a substring, but do not double the word "two" itself. Put one space between the doubles. [begins: a5]
+cat * | sed 's/\w\+two\|two\w\+\|\w\+two\w\+/& &/g' | sha1sum
+a5aa1d7070a1240c462466a75a0fbbe31dd52d16  -
+
+28) Replace every occurrences of 2 or more of the same word character in a row with one occurrence of that word character. [begins: a1]
+cat * | sed -r 's/(\w)\1+/\1/g' | sha1sum
+a139b89485380a8fee43a79576a7381b542422d8  -
+
+29) Delete all lines that contain exactly 4 numeric digits. [begins: d]
+
+30) Using grep and sed, display every 100th line from all files. Line count should restart for each file. There should be no labels on the lines. Do not use cut, awk, or perl. Use only grep, egrep and sed. [begins: 92]
+
+[10; 2 each]
+Are the following REs the same? If so, describe the language that they match (in plain English); if not, give a counter example that matches one but not the other (and say which it matches.)
+31) .a{4} starts with whatever character followed by 4 a characters aaaa+ starts with 3 a characters followed by 1 or many a’s
+The bottom one will find a 4 a’s while the top one does not
+32) [^b]*b b[^b]* They are be equal because [^b]* means 0 or infinite amount of not b character and in this case b = b (since we can simplify [^b]* to be 0 )
+33) They are NOT equal \Wc Matches a non-alphanumeric character (non words characters). Excluding “” \bc matches a zero width boundary and then a c
+For a file with:  c 
+ccc
+cc
+c c
+egrep "\Wc" foo will print:
+ c 
+c c
+And egrep "\bc" foo will print                                                                                                 
+ c 
+ccc
+cc
+c c
+
+34) Despite the red marker point me that are not the same the results came up with the same lines on the file I tested. \Bd matches a zero-width boundary between a word-class character and another word class character and a d \wd word and then a d
+35) Not equals The sed address specifiers: /^[^e]/      Whatever operation you’re doing on sed pointing at an element who starts with a non e alphanumeric character  /^e/!         Negation of that ^e address Will do an operation on a character who starts with an e for a literal char !  For example foo: e
+ee
+eee
+e e e
+^e
+ ^e
+aaa
+
+
+sed -e 's/^e/!/g' foo Will become:                                                                                        
+!
+!e
+!ee
+! e e
+^e
+ ^e

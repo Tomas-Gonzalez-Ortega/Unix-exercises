@@ -1,0 +1,333 @@
+1.
+
+{ ratio[$3]++ }
+END {
+    printf "%0.2f\n", ratio["M"]/ratio["F"];
+}
+
+cat emp.txt | awk -f q1.awk | sha1sum
+2d649081ab7d6b92eef969fd24cc08fe6fa02a32
+
+1.00
+
+_____________________________________________________________
+2.
+
+$8 > 85800 { print NR, $0, $8 - 85800; }
+
+553 Grey Mora M 30 Single 2017 604-555-6855 85827 27
+670 Calvin Porter M 40 Single 2015 604-555-6161 85803 3
+954 Randy Booth M 38 Married 2015 778-555-8544 85898 98
+1170 Keith Bauer M 55 Married 2016 604-555-3164 85816 16
+1554 Ayden Sullivan M 27 Married 2016 778-555-2472 85994 194
+
+cat emp.txt | awk -f q2.awk | sha1sum
+b91707c3522dad56b12c62e6bc991c523f28f6da
+
+_____________________________________________________________
+3.
+
+BEGIN {
+        avgM = 0;
+        avgF = 0;
+}
+{ totals[$3]++; }
+$3 == "M" { avgM += $8 }
+$3 == "F" { avgF += $8 }
+END { avgM /= totals["M"];
+      avgF /= totals["F"];
+      printf "%0.2f\n", avgM/avgF
+}
+
+cat emp.txt | awk -f q3.awk | sha1sum                                                                                                                                                                         
+2d649081ab7d6b92eef969fd24cc08fe6fa02a32
+
+1.00
+
+_____________________________________________________________
+4.
+
+BEGIN { total = 0;
+        newWage = 0; 
+}
+$3 == "F" { total += $8;
+            newWage += int($8 * 0.72); 
+}
+END { print total - newWage; }
+
+cat emp.txt | awk -f q4.awk | sha1sum                                                                                                                                                                         
+a70d41ecaac81880685c7d93d6f9c60e6357128
+
+17865887
+
+_____________________________________________________________
+5.
+
+BEGIN { maxWage = 0;
+        minWage = 0;
+        currentWage = 0;
+}
+$4 <= 26 && $5 == "Single" && $6 == 2017 && $8 < 44000 {
+        print $1, $7, $8;
+}
+
+cat emp.txt | awk -f q5.awk | sha1sum                                                                                                                                                                         
+4b7a13c7ec327f207e997127c85cd0754c28ab32
+
+Kaylynn 604-555-1162 43264
+
+_____________________________________________________________
+6.
+
+$3 == "M" && $4 >= 35 { next }
+$3 == "M" && $4 >= 25 && $5 == "Married" { next }
+$3 == "F" && $4 != 36 { next }
+{ print }
+
+cat emp.txt | awk -f q6.awk | sha1sum
+338dd3e24004c96c6583325484e31bb3e43a8b46  -
+
+_____________________________________________________________
+7.
+
+BEGIN { maxWage = 0;
+        minWage = 0;
+}
+
+$8 > maxWage { maxWage = $8; }
+{ minWage = maxWage }
+$8 < minWage { minWage = $8; }
+
+END { print maxWage - minWage }
+
+cat emp.txt | awk -f q7.awk | sha1sum
+e650ae41a44d1b043964d5469df2296ffb28a9fe 
+
+6630
+
+_____________________________________________________________
+8.
+
+$7 ~ /^604/{list[0]++} 
+$7 ~ /^778/{list[1]++} 
+$7 ~ /^236/{list[2]++}
+END { print list[0], list[1], list[2] }
+
+cat emp.txt | awk -f q8.awk | sha1sum
+55688ba0c57d3edf76f425d57a945e4c92eeaf5c 
+
+646 693 661
+
+_____________________________________________________________
+9.
+
+length($2) > length(lastname) { lastname = $2 }
+length($2) == length(lastname) && lastname > $2 { lastname = $2 }
+END { print lastname }
+
+cat emp.txt | awk -f q9.awk | sha1sum                                                                                                                                                                         
+e675d6c95f673263e2427e4ca7a7469730ab8076
+
+Blankenship
+
+_____________________________________________________________
+10.
+
+{ arr[substr($7, length($7) - 3)]++ }
+END{ 
+    sum = 0;
+    for(i in arr) {
+        if(arr[i] == 3) {
+            sum += i
+        }
+    }
+    print sum
+}
+
+35161
+
+cat emp.txt | awk -f q10.awk | sha1sum
+41069a47411ebf467a7f5359c8935377a477910d
+
+_____________________________________________________________
+11.
+
+{   
+    for(i = 1; i <= NF; i++) {
+        total += $i;
+    }
+    printf "%0.2f\n", total;
+    total = 0;
+}
+
+cat sales.txt | awk -f q11.awk | sha1sum
+03dcd4556dd937dd0c8fb9a0d35d0d75e11c533d
+
+_____________________________________________________________
+12. 
+
+{
+    split($0, tempArr);
+    asort(tempArr);
+    for(i = 1; i <= NF; i++) {
+        printf "%s ", tempArr[i]
+    }
+    print "";
+    delete tempArr;
+}
+Honestly not sure about this one, the question didn't really make any sense. Did Jeremy want every column sorted and outputted? What I have here sorts the rows.
+
+_____________________________________________________________
+13. 
+
+NR == 50, NR == 60 {
+    for(i = 1; i <= NF; i++) {
+        arr[substr($i, length($i) - 1)]++;
+    }
+}
+
+END {
+    max = 0;
+    for (i in arr) {
+        print i, arr[i]
+    }
+}
+
+cat sales.txt | awk -f q13.awk | sha1sum
+3cc9344d9e9df779f38144a0308034ce89c940ad
+
+10 1
+11 1
+18 1
+32 1
+34 1
+35 1
+36 3
+50 2
+52 1
+39 2
+53 2
+54 2
+55 1
+56 1
+70 1
+57 1
+71 2
+72 1
+74 1
+75 2
+76 1
+77 2
+90 1
+78 1
+91 2
+92 1
+94 2
+95 1
+96 2
+97 1
+98 1
+99 2
+00 1
+01 2
+02 1
+03 1
+04 2
+05 2
+07 1
+08 1
+22 1
+09 1
+25 3
+26 1
+40 4
+41 1
+42 2
+43 2
+44 1
+47 1
+61 1
+48 1
+49 2
+62 1
+65 2
+67 1
+80 1
+69 1
+82 1
+84 1
+85 3
+86 1
+87 1
+
+_____________________________________________________________
+14. 
+
+BEGIN { 
+    FS = ",";
+    pokemon = 0;
+    legendary = 0;
+}
+
+$3 ~ /[A-Z]/ && $4 ~ /[A-Z]/ { pokemon++ }
+$3 ~ /[A-Z]/ && $4 ~ /[A-Z]/ && $12 == "T" { legendary++ }
+
+END { printf "%0.2f%\n", (legendary/pokemon) * 100 }
+
+9.66%
+
+cat pokemon.csv | awk -f q14.awk | sha1sum
+b88fd077bb3f4fa2da2a7871d491b019b377fd2a 
+
+_____________________________________________________________
+15. 
+
+BEGIN { FS = "," }
+
+$3 ~ /[A-Z]/ { arr[$3]++ }
+$4 ~ /[A-Z]/ { arr[$4]++ }
+END {
+    max = 0;
+    for(i in arr) { 
+        if(arr[i] > max) {
+            max = arr[i];
+            type = i;
+        }
+    }
+    print type
+}
+
+$ cat pokemon.csv | awk -f q15.awk | sha1sum
+b73bc363f7397cac1403eee10777faa6a937956e 
+
+Water
+
+_____________________________________________________________
+16. 
+
+BEGIN { FS = "," }
+$2 ~ /[x]/ { $5 += int($5 * 0.25) }
+{   
+    OFS = ",";
+    print
+}
+
+cat pokemon.csv | awk -f q16.awk | sha1sum
+545c28b9b28dfcea95be040c5e026cc527971684
+
+_____________________________________________________________
+17.
+
+BEGIN { FS = "," }
+$2 ~ /[x]/ { $5 += int($5 * 0.25) }
+{   
+    OFS = ",";
+    print
+}
+
+cat pokemon.csv | awk -f q16.awk | sha1sum
+545c28b9b28dfcea95be040c5e026cc527971684
+
+_____________________________________________________________
+Alex Testani
+100215049

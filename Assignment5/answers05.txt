@@ -1,0 +1,312 @@
+CPSC1280 Tomas Gonzalez-Ortega
+a05: awk
+
+1. Determine the ratio of men to women at the company (#men/#women). Display the result to 2 decimal places on a single line by itself. [sha1sum begins: 2]
+
+END { printf "%0.2f\n", ratio["M"]/ratio["F"]; }
+
+cat emp.txt | awk -f q01.awk | sha1sum
+2d649081ab7d6b92eef969fd24cc08fe6fa02a32
+
+1.00
+
+
+2. For all employees who have a salary greater than $85800, print the line number on which they occur, all of their info, and how much over $85800 they earn (all with exactly 1 space between them). [sha1sum begins: b]
+
+$8 > 85800 { print NR, $0, $8 - 85800; }
+
+553 Grey Mora M 30 Single 2017 604-555-6855 85827 27
+670 Calvin Porter M 40 Single 2015 604-555-6161 85803 3
+954 Randy Booth M 38 Married 2015 778-555-8544 85898 98
+1170 Keith Bauer M 55 Married 2016 604-555-3164 85816 16
+1554 Ayden Sullivan M 27 Married 2016 778-555-2472 85994 194
+
+cat emp.txt | awk -f q02.awk | sha1sum
+b91707c3522dad56b12c62e6bc991c523f28f6da
+
+
+3. Women's Studies heard that all of the people from the above question were men. They've asked us to determine the ratio of the men's average salary to the women's average salary. (avgM/avgF). Display the result to 2 decimal places on a single line by itself. [sha1sum begins: 2]
+
+BEGIN {
+    menAvg = 0;
+    FemAvg = 0;
+}
+{totals[$3]++;}
+$3 == "M" { menAvg += $8 }
+$3 == "F" { FemAvg += $8 }
+END { 
+    menAvg /= totals["M"];
+    FemAvg /= totals["F"];
+    printf "%0.2f\n", menAvg/FemAvg
+}
+
+cat emp.txt | awk -f q03.awk | sha1sum                                                                                                                                                                         
+2d649081ab7d6b92eef969fd24cc08fe6fa02a32
+
+1.00
+
+
+4. Women's Studies is incredulous of our results, saying something about a "wage gap". Our CEO overheard that "women earn only 72% of men doing the exact same job". He thought that in light of this new information, all women's salaries should be reduced by 28%. Change all of the women's salaries to be 72% of what they are now; use the int() function to round each salary. Output only the savings to the company (the difference) on a line by itself -- this number should already be an integer. [sha1sum begins: a]
+
+BEGIN { 
+    preWage = 0;
+    newWage = 0; 
+}
+$3 == "F" { preWage += $8;
+            newWage += int($8 * 0.72); 
+}
+END { print preWage - newWage; }
+
+cat emp.txt | awk -f q04.awk | sha1sum                                                                                                                                                                         
+a70d41ecaac81880685c7d93d6f9c60e6357128
+
+17865887
+
+
+5. The CEO has heard that some of the female employees are having difficulties with the reduced salaries. He wishes to contact some of them directly. Output the first name, phone number, and salary of all the single woman who were hired in 2017 who make less than 44000, and are 26 years old or less. [sha1sum begins: 4]
+
+$5 == "Single" && $6 == 2017 && $8 < 44000 && $4 <= 26 {
+    print $1, $7, $8;
+}
+
+cat emp.txt | awk -f q05.awk | sha1sum                                                                                                                                                                         
+4b7a13c7ec327f207e997127c85cd0754c28ab32
+
+Kaylynn 604-555-1162 43264
+
+
+6. The CEO has decided that we should be a software company that makes games. Fire all the men 35 years old or older, and all of the married men 25 years old or older. Also fire all of the women who are not exactly 36 years old. Do not include the output from this command as there are 236 employees who survived the purge. (The "next" command may be of use to you.) Do provide the command and the sha1sum. [sha1sum begins: 3]
+
+$3 == "M" && $4 >= 35 { next }
+$3 == "M" && $4 >= 25 && $5 == "Married" { next }
+$3 == "F" && $4 != 36 { next }
+{ print }
+
+cat emp.txt | awk -f q06.awk | sha1sum
+338dd3e24004c96c6583325484e31bb3e43a8b46  -
+
+
+7. The CEO has been replaced. The new CEO wants to know the difference between what we pay our highest paid employee, and out lowest paid employee. [sha1sum begins: e]
+
+BEGIN { 
+    max = 0;
+    min = 0;
+}
+$8 > max { max = $8; }
+{ min = max }
+$8 < minWage { minWage = $8; }
+
+END { print max - min }
+
+cat emp.txt | awk -f q07.awk | sha1sum
+e650ae41a44d1b043964d5469df2296ffb28a9fe 
+
+6630
+
+
+8. Count the number of people who have 604, 778, and 236 phone numbers (3 counts, 1 each). Display the counts on a single line with one space between them, in the order they were given (607 778 236). [sha1sum begins: 5]
+
+$7 ~ /^604/{ people[0]++ } 
+$7 ~ /^778/{ people[1]++ } 
+$7 ~ /^236/{ people[2]++ }
+END { print people[0], people[1], people[2] }
+
+cat emp.txt | awk -f q08.awk | sha1sum
+55688ba0c57d3edf76f425d57a945e4c92eeaf5c 
+
+646 693 661
+
+
+9. Determine the longest last name in the employee list. If there is a tie for longest name, choose the one that comes lexicographically last. You can use > for lexicographic comparison of strings in awk. Output the name on a line by itself. [sha1sum begins: 3]
+
+length($2) > length(surname) { surname = $2 }
+length($2) == length(surname) && surname > $2 { surname = $2 }
+END { print surname }
+
+cat emp.txt | awk -f q09.awk | sha1sum                                                                                                                                                                         
+e675d6c95f673263e2427e4ca7a7469730ab8076
+
+Blankenship
+
+
+10. Each phone number in North America has 3 parts. The NPA (Numbering Plan Area Code) is the 1st three digits; the Central Office (exchange) Code is the 2nd three digits, and the Subscriber Number is the final four digits. Some of the Subscriber Numbers occur 3 times in the employee list. Output the sum of those Subscriber Numbers. [sha1sum begins: 4]
+
+{ arr[substr($7, length($7) - 3)]++ }
+END { 
+    sum = 0;
+    for(i in arr) {
+        if(arr[i] == 3) {
+            sum += i
+        }
+    }
+    print sum
+}
+
+cat emp.txt | awk -f q10.awk | sha1sum
+41069a47411ebf467a7f5359c8935377a477910d
+
+35161
+
+
+11. Condense the sales figures to be the sum of the sales for each day. The output should be a single column of values, where the value per line is the sum of the input line. Print that value to 2 decimal places. Do not include the output of this command as it has 365 lines. [sha1sum begins: 03]
+
+{ for(i = 1; i <= NF; i++) {
+      sales += $i;
+  }
+  printf "%0.2f\n", sales;
+  sales = 0;
+}
+
+cat sales.txt | awk -f q11.awk | sha1sum
+03dcd4556dd937dd0c8fb9a0d35d0d75e11c533d
+
+
+12. Reformat data such that the columns are sorted (ascending order). Use awk's asort() function, and awk's delete function to delete your temporary array between lines. [sha1sum begins: c]
+
+
+	13.	[sales.txt] From 50 to 60 (inclusive), display the count of how often each number of cents occurred in a sale. Display the cents and occurrences once per line. eg: "38 34" [sha1sum begins: 3]
+
+NR == 50, NR == 60 {
+    for(i = 1; i <= NF; i++) {
+        arr[substr($i, length($i) - 1)]++;
+    }
+}
+END {
+    for(i in arr) {
+        print i, arr[i]
+    }
+}
+
+cat sales.txt | awk -f q13.awk | sha1sum
+3cc9344d9e9df779f38144a0308034ce89c940ad
+
+10 1
+11 1
+18 1
+32 1
+34 1
+35 1
+36 3
+50 2
+52 1
+39 2
+53 2
+54 2
+55 1
+56 1
+70 1
+57 1
+71 2
+72 1
+74 1
+75 2
+76 1
+77 2
+90 1
+78 1
+91 2
+92 1
+94 2
+95 1
+96 2
+97 1
+98 1
+99 2
+00 1
+01 2
+02 1
+03 1
+04 2
+05 2
+07 1
+08 1
+22 1
+09 1
+25 3
+26 1
+40 4
+41 1
+42 2
+43 2
+44 1
+47 1
+61 1
+48 1
+49 2
+62 1
+65 2
+67 1
+80 1
+69 1
+82 1
+84 1
+85 3
+86 1
+87 1
+
+
+14. For the pokemon that have 2 types, determine what percentage are legendary (the last field). Display the output as a percentage to 2 decimal places, followed by a % sign (no spaces). [sha1sum begins: b]
+
+BEGIN { 
+    FS = ",";
+    twoTyped = 0;
+    legendary = 0;
+}
+
+$3 ~ /[A-Z]/ && $4 ~ /[A-Z]/ { twoTyped++ }
+$3 ~ /[A-Z]/ && $4 ~ /[A-Z]/ && $12 == "T" { legendary++ }
+
+END { printf "%0.2f%\n", (legendary/twoTyped) * 100 }
+
+cat pokemon.csv | awk -f q14.awk | sha1sum
+b88fd077bb3f4fa2da2a7871d491b019b377fd2a
+
+9.66%
+
+
+15. What type of pokemon occurs the most often? Pokemon that have 2 types count for both. [sha1sum begins: b]
+
+BEGIN { FS = "," }
+$3 ~ /[A-Z]/ { arr[$3]++ }
+$4 ~ /[A-Z]/ { arr[$4]++ }
+END {
+    mostOften = 0;
+    for(i in arr) { 
+        if(arr[i] > mostOften) {
+            mostOften = arr[i];
+            type = i;
+        }
+    }
+    print type
+}
+
+$ cat pokemon.csv | awk -f q15.awk | sha1sum
+b73bc363f7397cac1403eee10777faa6a937956e 
+
+Water
+
+
+16. For all the pokemon that have an "x" in their name, increase their HP (field 5) by 25%. Round to an integer with the int() function. Do not include the output as there are 800 lines. [sha1sum begins: 5]
+
+BEGIN { FS = "," }
+$2 ~ /[x]/ { $5 += int($5 * 0.25) }
+{   
+    OFS = ",";
+    print
+}
+
+cat pokemon.csv | awk -f q16.awk | sha1sum
+545c28b9b28dfcea95be040c5e026cc527971684
+
+
+17. For all the pokemon that have 3 capital letters in their name, reduce field 6 by 10. Do not include the output as there are 800 lines. [sha1sum begins: 9]
+
+BEGIN { FS = "," }
+$2 ~ /[A-Z]*[A-Z]*[A-Z]/ { $6 += int($6 - 10) }
+{   
+    OFS = ",";
+    print
+}
+
+cat pokemon.csv | awk -f q17.awk | sha1sum
+

@@ -1,0 +1,178 @@
+1. cd is a built in function, on top of that cd directly manipulates the shell by changing its current working directory.
+
+2. () with commands creates a subshell which executes the commands, example being (c1; c2; c3). When (exit) is called, it's exiting that subshell. When exit is called it's    exiting my current subshell
+
+3. a) doesn't work, alice is under other for this scenario and she can't write to files.
+   b) alice:gB
+   c) in order for alice to write to the directory, her UID would have to be bob so no it doesn't work
+   d) bob:gA
+   e) alice:gB
+   f) no because alice is part of gB and the 'S' denotes the file cannot be executed.
+   g) bob:gC
+   h) no because the program is being executed as bob:gB which falls under the "other" category in the directory which has no execute permission, thus rendering it       unaccessible
+
+4. sudo useradd -s /bin/bash -m alice
+
+5. sudo userdel -r alice
+
+6. sudo apt-get update; sudo apt-get install p7zip-full
+
+7. 0 9,22 */2 4-8 * nookie.sh
+ 
+8. a) The transaction went through, the log states that it was committed meaning it finished what it needed to do
+   b) The transaction most likely went through, it commit most likely making any changes Action A provided saved
+   c) The transaction never commit so any changes made from A were likely rolled back when the system shut down
+   d) Same as C
+_____________________________________________________________________________
+9.
+
+ #!/bin/sh
+
+error1="rm: m"
+error2="rm: c"
+
+if [ $# = 0 ] ; then
+    echo "----USAGE----
+Enter patterns seperated by \"\" and the program should delete any files that match the patterns"
+    exit 3
+fi
+
+for i in "$@"; do
+    output=$(rm -v $(find . -type f -name "*$i") 2>&1)
+    errCheck=$(expr "$output" : '\(.....\)')
+    if [ "$errCheck" = "$error1" ] ; then
+        echo "No file matches any pattern"
+        exit 1
+    fi
+    if [ "$errCheck" = "$error2" ] ; then
+        echo $output
+        exit 2
+    fi
+done
+
+_____________________________________________________________________________
+
+10.
+
+#!/bin/sh
+
+error1="rm: m"
+error2="rm: c"
+
+if [ $# = 0 ] ; then
+    echo "----USAGE----
+Enter patterns seperated by \"\" and the program should delete any files that match all the patterns"
+    exit 3
+fi
+
+for i in "$*"; do
+    output=$(rm -v $(find . -type f -name "*$i") 2>&1)
+    errCheck=$(expr "$output" : '\(.....\)')
+    if [ "$errCheck" = "$error1" ] ; then
+        echo "No file matches any pattern"
+        exit 1
+    fi
+    if [ "$errCheck" = "$error2" ] ; then
+        echo $output
+        exit 2
+    fi
+    
+    
+done
+
+_____________________________________________________________________________
+
+11.
+
+#!/bin/sh
+
+if [ $# = 0 ] ; then
+    echo " ----USAGE----
+Command substitute ls -l (this doesn't really work I don't know hwo to include files with spaces)
+to use a list of files for the input or you can enter the arguments seperated by \"arg\".
+the program will then take the arguments and compress any files and keep the smallest compression deleting the others"
+    exit 3
+fi
+
+for i in "$@"; do
+
+    size=$(ls -l "$i" | cut -d' ' -f5)
+   
+    gSize=$(gzip -k "$i" | ls -l "$i.gz" | cut -d' ' -f5)
+    
+    zSize=$(zip "$i.zip" "$i" | ls -l "$i.zip" | cut -d' ' -f5)
+   
+    bSize=$(bzip2 -k "$i" | ls -l "$i.bz2" | cut -d' ' -f5)
+  
+    7z < "$i" > "$i.7z"
+    szSize=$(ls -l "$i.7z" | cut -d' ' -f5)
+    
+    keptFile="$i"
+    smallest=$size
+    
+    if [ $gSize -gt $smallest ] ; then #cheeck gzip size
+        rm -f "$i.gz"
+    else
+        smallest=$gSize
+        keptFile="$i.gz"
+        rm -f "$i"
+    fi
+    
+    if [ $zSize -gt $smallest ] ; then #check zip size
+        rm -f "$i.zip"
+    else
+        smallest=$gSize
+        keptFile="$i.zip"
+        rm -f "$i"
+    fi
+    
+    if [ $bSize -gt $smallest ] ; then #check bzip size
+        rm -f "$i.bz2"
+    else
+        smallest=$gSize
+        keptFile="$i.bz2"
+        rm -f "$i"
+    fi
+    
+    if [ $szSize -gt $smallest ] ; then #check 7z size
+        rm -f "$i.7z"
+    else
+        smallest=$szSize
+        keptFile="$i.7z"
+        rm -f "$i"
+   fi
+   
+   echo "File kept: $keptFile"
+
+    
+done
+
+_____________________________________________________________________________
+
+12.
+
+#!/bin/sh
+
+
+if [ $# = 0 ] ; then
+    
+echo "----USAGE----
+
+Enter a single numeric number that represents seconds, and the script will kill any process that has been running longer or equal to the input."
+    
+exit 3
+
+fi
+
+
+??????????
+
+
+Honestly this assignment was way too hard. I don't know how anyone could figure that last question out on their own. I had no time to see Jeremy outside of class time,
+and even if I did I was busting my butt off working on this assignment. I'm not confident in any of my answers and truth be told pretty choked. With the extension I barely
+scraped by. 
+
+Alex Testani
+100215049
+
+
